@@ -51,7 +51,7 @@ __global__ void matrix_mul(float *A, float *C, float a, float b, float c, float 
  * Host main routine
  */
 int
-main(void)
+main(int argc, char **argv)
 {
     /*
         INPUT READING FROM FILE
@@ -62,7 +62,7 @@ main(void)
      float*  state_vector  = (float*)malloc(vector_size * sizeof(float));
 
      float number;
-      FILE* in_file = fopen("input.txt", "r"); // read only  
+      FILE* in_file = fopen(argv[1], "r"); // read only  
      
       if (! in_file ) // equivalent to saying if ( in_file == NULL ) 
          {  
