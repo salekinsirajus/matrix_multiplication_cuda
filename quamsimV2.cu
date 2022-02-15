@@ -24,14 +24,6 @@
 // For the CUDA runtime routines (prefixed with "cuda_")
 #include <cuda_runtime.h>
 
-/*
-Utility functions
-*/
-int setKthBit(int n, int k)
-{
-    // kth bit of n is being set by this operation
-    return ((1 << k) | n);
-}
 
 /**
  * CUDA Kernel Device code
@@ -52,17 +44,6 @@ __global__ void matrix_mul(float *A, float *C, float a, float b, float c, float 
         }
     }
    
-}
-
-__global__ void
-vectorAdd(const float *A, float *C, int numElements)
-{
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-
-    if (i < numElements)
-    {
-        C[i] = A[i] + A[i];
-    }
 }
 
 
@@ -121,7 +102,7 @@ main(void)
     // Print the vector length to be used, and compute its size
     int numElements = final_size;
     size_t size = numElements * sizeof(float);
-    printf("[Vector addition of %d elements]\n", numElements);
+    //printf("[Vector addition of %d elements]\n", numElements);
 
     // Allocate the host input vector A
     float *h_A = (float *)malloc(size);
@@ -165,7 +146,7 @@ main(void)
 
     // Copy the host input vectors A and B in host memory to the device input vectors in
     // device memory
-    printf("Copy input data from the host memory to the CUDA device\n");
+    //printf("Copy input data from the host memory to the CUDA device\n");
     err = cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
 
     if (err != cudaSuccess)
@@ -178,8 +159,7 @@ main(void)
     // Launch the Vector Add CUDA Kernel
     int threadsPerBlock = 256;
     int blocksPerGrid =(numElements + threadsPerBlock - 1) / threadsPerBlock;
-    printf("CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
-    //vectorAdd<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_C, numElements);
+    //printf("CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
     matrix_mul<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_C, a, b, c, d, numElements, t_bit);
     err = cudaGetLastError();
 
@@ -191,7 +171,7 @@ main(void)
 
     // Copy the device result vector in device memory to the host result vector
     // in host memory.
-    printf("Copy output data from the CUDA device to the host memory\n");
+    //printf("Copy output data from the CUDA device to the host memory\n");
     err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
 
     if (err != cudaSuccess)
@@ -203,16 +183,9 @@ main(void)
     // Verify that the result vector is correct
     for (int i = 0; i < numElements; ++i)
     {
-        
-        if (fabs((2 * h_A[i]) - h_C[i]) > 1e-5)
-        {
-            //fprintf(stderr, "Result verification failed at element %d!\n", i);
-            printf("%.3f\n", h_C[i]);
-            //exit(EXIT_FAILURE);
-        }
+        printf("%.3f\n", h_C[i]);
     }
 
-    printf("Test PASSED\n");
 
     // Free device global memory
     err = cudaFree(d_A);
@@ -253,7 +226,6 @@ main(void)
         exit(EXIT_FAILURE);
     }
 
-    printf("Done\n");
     return 0;
 }
 
