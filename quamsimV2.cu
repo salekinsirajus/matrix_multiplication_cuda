@@ -83,7 +83,6 @@ main(int argc, char **argv)
 
            else {
                state_vector[count-4] = number; 
-               //printf("%f\n", number);
             }
 
            last = number;
