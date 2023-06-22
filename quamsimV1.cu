@@ -3,7 +3,23 @@
  * Author: Sirajus Salekin
  *
  * Contains cuda kernel that performs matrix multiplication to simulate
- * applying quantum gate on a quantum circuit.
+ * applying quantum gate on an n-qubit quantum circuit.
+ *
+ * https://dl.acm.org/doi/abs/10.1145/3447818.3460357
+ *  
+ * See section 2 in this paper for details. Motivation behind the algorithm
+ * implemented here is directly quoted from the paper:
+ *
+ * "An n-qubit system is represented by 2^n complex numbers. A gate on
+ * the n-qubit system is a 2^n x 2^n unitary matrix. However, the 2^n x 2^n 
+ * matrix representations of single qubit gates and controlled gates are
+ * very sparse and there is no need to construct the matrix. Instead,
+ * these gates can be implemented by several small matrix multiplications.
+ * ...
+ * And applying a two-qubit controlled gate on the n-qubit system
+ * is equivalent to 2^(n−2) matrix multiplication tasks. Each task updates
+ * two positions with the index of the control qubit C equals 1 and
+ * only the target qubit t differs."
  */
 
 #include <stdio.h>
@@ -17,10 +33,21 @@
 /**
  * CUDA Kernel Device code
  *
- * Computes the vector addition of A and B into C. The 3 vectors have the same
- * number of elements numElements.
+ * The kernel code takes the thread id and use it to calculate the pair of elements
+ * in the quantum state that should be computed together. It checks for 1 or 0 at the "t-th" bit
+ * and calculates the matrix once it finds that. However, when it figures out that pairing
+ * criteria does not match, that thread does not do anything. Some optimization that can be done here
+ *
+ * Inputs:
+ *  1. float *A: statevector of the n-qubit system
+ *  2. float *C: statevector after applying the quantum gate operation 
+ *  3. float a, b, c, d: represent the quantum gate being applied to
+ *     |a b|
+ *     |c d|
+ *  4. state_size: size of the statevector pointed by *A and *C
+ *  5. t-bit: The bit where the target qubit differs.
  */
-// A contains input
+
 __global__ void matrix_mul(float *A, float *C, float a, float b, float c, float d, int state_size, int t_bit){
     int i = blockDim.x * blockIdx.x + threadIdx.x;
 
