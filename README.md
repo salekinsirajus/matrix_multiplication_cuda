@@ -3,11 +3,11 @@ This repository contains code that performs simulation of applying a
 single-qubit quantum gate to one qubit in an n-qubit quantum circuit. 
 
 There are two versions of the algorithm: `quamsimV1.cu` uses `cudaMalloc`
-while the second version uses `cudaMallocManaged` to see improvement
-otherwise identical code.
+while the second version(`quamsimV2.cu`) uses `cudaMallocManaged` to see improvement
+in otherwise identical code.
  
 ## Reference
-1. HyQuas: Hybrid Partitioner Based Quantum Circuit Simulation System on GPU
+1. [HyQuas: Hybrid Partitioner Based Quantum Circuit Simulation System on GPU](https://pacman.cs.tsinghua.edu.cn/~zjd/publication/ics21-hyquas/ics21-hyquas.pdf)
 
 ## How to Run
 1. Use the `setup.py` file to prepare the enviroment (`python setup.py`)
